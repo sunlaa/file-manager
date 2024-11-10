@@ -1,9 +1,11 @@
 import * as readline from 'readline/promises';
-import { stdin as input, stdout as output } from 'node:process';
+import { stdin as input, stdout as output, stdout } from 'node:process';
 import os from 'os';
 import { up, cd, ls } from './nwd/index.js';
 import { cat, add, mkdir, rn, cp, mv, rm } from './files/index.js';
-import { cpus, eol, homedir, username, architecture  } from './os/index.js';
+import { cpus, eol, homedir, username, architecture } from './os/index.js';
+import { hash } from './hash/index.js';
+import { brotli } from './brotli/index.js';
 
 const args = process.argv.slice(2);
 let user = 'Guest';
@@ -18,7 +20,7 @@ console.log(`Welcome to the File Manager, ${user}!`);
 
 const rl = readline.createInterface({ input, output });
 
-// process.chdir(os.homedir());
+process.chdir(os.homedir());
 
 console.log(`You are curerntly in ${process.cwd()}`);
 
@@ -26,6 +28,11 @@ rl.on('line', async (line) => {
   const currentDir = process.cwd();
 
   switch (true) {
+    case line === '.exit': {
+      rl.close();
+      process.exit(0);
+    }
+
     case line === 'up': {
       up(currentDir);
       break;
@@ -95,8 +102,24 @@ rl.on('line', async (line) => {
       username();
       break;
     }
+
     case line === 'os --architecture': {
       architecture();
+      break;
+    }
+
+    case line.startsWith('hash'): {
+      hash(line, currentDir);
+      break;
+    }
+
+    case line.startsWith('compress'): {
+      brotli(line, currentDir);
+      break;
+    }
+
+    case line.startsWith('decompress'): {
+      brotli(line, currentDir, 'decompress');
       break;
     }
 
@@ -107,4 +130,8 @@ rl.on('line', async (line) => {
   }
 
   console.log(`You are curerntly in ${process.cwd()}`);
+});
+
+rl.on('close', () => {
+  console.log(`Thank you for using File Manager, ${user}, goodbye!`);
 });
