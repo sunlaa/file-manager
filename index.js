@@ -3,17 +3,18 @@ import { stdin as input, stdout as output } from 'node:process';
 import os from 'os';
 import { up, cd, ls } from './nwd/index.js';
 import { cat, add, mkdir, rn, cp, mv, rm } from './files/index.js';
+import { cpus, eol, homedir, username, architecture  } from './os/index.js';
 
 const args = process.argv.slice(2);
-let username = 'Guest';
+let user = 'Guest';
 
 args.forEach((arg) => {
   if (arg.startsWith('--username=')) {
-    username = arg.split('=')[1];
+    user = arg.split('=')[1];
   }
 });
 
-console.log(`Welcome to the File Manager, ${username}!`);
+console.log(`Welcome to the File Manager, ${user}!`);
 
 const rl = readline.createInterface({ input, output });
 
@@ -69,8 +70,33 @@ rl.on('line', async (line) => {
       await mv(line, currentDir);
       break;
     }
+
     case line.startsWith('rm'): {
       await rm(line, currentDir);
+      break;
+    }
+
+    case line === 'os --EOL': {
+      eol();
+      break;
+    }
+
+    case line === 'os --cpus': {
+      cpus();
+      break;
+    }
+
+    case line === 'os --homedir': {
+      homedir();
+      break;
+    }
+
+    case line === 'os --username': {
+      username();
+      break;
+    }
+    case line === 'os --architecture': {
+      architecture();
       break;
     }
 
